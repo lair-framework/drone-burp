@@ -24,7 +24,7 @@ const (
 	Parses a burp XML file into a lair project.
 	Usage:
 	drone-burp [options] <id> <filename>
-	export LAIR_ID=<id>; drone-nessus [options] <filename>
+	export LAIR_ID=<id>; drone-burp [options] <filename>
 	Options:
 	-v              show version and exit
 	-h              show usage and exit
@@ -197,7 +197,7 @@ func main() {
 	}
 	burpData, err := burp.Parse(buf)
 	if err != nil {
-		log.Fatalf("Fatal: Error parsing nessus data. Error %s", err.Error())
+		log.Fatalf("Fatal: Error parsing burp data. Error %s", err.Error())
 	}
 	hostTags := []string{}
 	if *tags != "" {
