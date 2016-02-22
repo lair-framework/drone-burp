@@ -85,7 +85,15 @@ func buildProject(burp *burp.Issues, projectID string, tags []string) (*lair.Pro
 		if err != nil {
 			return nil, err
 		}
-		lhost.IPv4 = issue.Host.IP
+		//Check if we have a valid IP address.  For some reason Burp can
+		//export data without IP set and the DNS name in the URL.
+		if issue.Host.IP != "" {
+			lhost.IPv4 = issue.Host.IP
+		} else if net.ParseIP(host) != nil {
+			lhost.IPv4 = host
+		} else {
+			continue
+		}
 		lhost.Hostnames = append(lhost.Hostnames, host)
 		hostStr := fmt.Sprintf("%s:%s:%d:%s", lhost.IPv4, issue.Path, portNum, "tcp")
 		//If the Issue hasn't been seen create it
