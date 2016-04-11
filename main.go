@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	version = "1.0.0"
+	version = "1.0.1"
 	tool    = "burp"
 	usage   = `
 	Parses a burp XML file into a lair project.
@@ -164,6 +164,9 @@ func main() {
 		log.Fatal("Fatal: Missing LAIR_API_SERVER environment variable")
 	}
 	lairPID := os.Getenv("LAIR_ID")
+	if lairPID == "" {
+		log.Fatal("Fatal: Missing LAIR_ID")
+	}
 	var filename string
 	switch len(flag.Args()) {
 	case 2:
