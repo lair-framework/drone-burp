@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	version = "1.0.0"
+	version = "1.0.1"
 	tool    = "burp"
 	usage   = `
 	Parses a burp XML file into a lair project.
