@@ -164,9 +164,6 @@ func main() {
 		log.Fatal("Fatal: Missing LAIR_API_SERVER environment variable")
 	}
 	lairPID := os.Getenv("LAIR_ID")
-	if lairPID == "" {
-		log.Fatal("Fatal: Missing LAIR_ID")
-	}
 	var filename string
 	switch len(flag.Args()) {
 	case 2:
@@ -177,7 +174,9 @@ func main() {
 	default:
 		log.Fatal("Fatal: Missing required argument")
 	}
-
+	if lairPID == "" {
+		log.Fatal("Fatal: Missing LAIR_ID")
+	}
 	u, err := url.Parse(lairURL)
 	if err != nil {
 		log.Fatalf("Fatal: Error parsing LAIR_API_SERVER URL. Error %s", err.Error())
