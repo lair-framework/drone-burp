@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	version = "1.0.1"
+	version = "1.0.2"
 	tool    = "burp"
 	usage   = `
 	Parses a burp XML file into a lair project.
@@ -96,7 +96,7 @@ func buildProject(burp *burp.Issues, projectID string, tags []string) (*lair.Pro
 			continue
 		}
 		lhost.Hostnames = append(lhost.Hostnames, host)
-		hostStr := fmt.Sprintf("%s:%s:%d:%s", lhost.IPv4, issue.Path, portNum, "tcp")
+		hostStr := fmt.Sprintf("%s:%d:%s", lhost.IPv4, portNum, "tcp")
 		//If the Issue hasn't been seen create it
 		if _, ok := vulnHostMap[issue.Type]; !ok {
 			v := &lair.Issue{}
@@ -128,14 +128,14 @@ func buildProject(burp *burp.Issues, projectID string, tags []string) (*lair.Pro
 	for _, hm := range vulnHostMap {
 		for key := range hm.Hosts {
 			tokens := strings.Split(key, ":")
-			portNum, err := strconv.Atoi(tokens[2])
+			portNum, err := strconv.Atoi(tokens[1])
 			if err != nil {
 				return nil, err
 			}
 			hostKey := &lair.IssueHost{
 				IPv4:     tokens[0],
 				Port:     portNum,
-				Protocol: tokens[3],
+				Protocol: tokens[2],
 			}
 			hm.Vulnerability.Hosts = append(hm.Vulnerability.Hosts, *hostKey)
 		}
