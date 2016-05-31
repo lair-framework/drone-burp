@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/b00stfr3ak/strip"
 	"github.com/lair-framework/api-server/client"
 	"github.com/lair-framework/go-burp"
 	"github.com/lair-framework/go-lair"
@@ -100,9 +101,9 @@ func buildProject(burp *burp.Issues, projectID string, tags []string) (*lair.Pro
 		if _, ok := vulnHostMap[issue.Type]; !ok {
 			v := &lair.Issue{}
 			v.Title = issue.Name
-			v.Description = issue.IssueBackground
-			v.Solution = issue.RemediationBackground
-			v.Evidence = issue.IssueDetail
+			v.Description = strip.StripTags(issue.IssueBackground)
+			v.Solution = strip.StripTags(issue.RemediationBackground)
+			v.Evidence = strip.StripTags(issue.IssueDetail)
 			v.CVSS = riskToCVSS(issue.Severity)
 			plugin := &lair.PluginID{Tool: tool, ID: issue.Type}
 			v.PluginIDs = append(v.PluginIDs, *plugin)
