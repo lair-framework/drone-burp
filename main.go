@@ -12,13 +12,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/b00stfr3ak/strip"
 	"github.com/lair-framework/api-server/client"
 	"github.com/lair-framework/go-burp"
 	"github.com/lair-framework/go-lair"
 )
 
 const (
-	version = "1.0.1"
+	version = "1.0.2"
 	tool    = "burp"
 	usage   = `
 	Parses a burp XML file into a lair project.
@@ -95,14 +96,14 @@ func buildProject(burp *burp.Issues, projectID string, tags []string) (*lair.Pro
 			continue
 		}
 		lhost.Hostnames = append(lhost.Hostnames, host)
-		hostStr := fmt.Sprintf("%s:%s:%d:%s", lhost.IPv4, issue.Path, portNum, "tcp")
+		hostStr := fmt.Sprintf("%s:%d:%s", lhost.IPv4, portNum, "tcp")
 		//If the Issue hasn't been seen create it
 		if _, ok := vulnHostMap[issue.Type]; !ok {
 			v := &lair.Issue{}
 			v.Title = issue.Name
-			v.Description = issue.IssueBackground
-			v.Solution = issue.RemediationBackground
-			v.Evidence = issue.IssueDetail
+			v.Description = strip.StripTags(issue.IssueBackground)
+			v.Solution = strip.StripTags(issue.RemediationBackground)
+			v.Evidence = strip.StripTags(issue.IssueDetail)
 			v.CVSS = riskToCVSS(issue.Severity)
 			plugin := &lair.PluginID{Tool: tool, ID: issue.Type}
 			v.PluginIDs = append(v.PluginIDs, *plugin)
@@ -127,14 +128,14 @@ func buildProject(burp *burp.Issues, projectID string, tags []string) (*lair.Pro
 	for _, hm := range vulnHostMap {
 		for key := range hm.Hosts {
 			tokens := strings.Split(key, ":")
-			portNum, err := strconv.Atoi(tokens[2])
+			portNum, err := strconv.Atoi(tokens[1])
 			if err != nil {
 				return nil, err
 			}
 			hostKey := &lair.IssueHost{
 				IPv4:     tokens[0],
 				Port:     portNum,
-				Protocol: tokens[3],
+				Protocol: tokens[2],
 			}
 			hm.Vulnerability.Hosts = append(hm.Vulnerability.Hosts, *hostKey)
 		}
