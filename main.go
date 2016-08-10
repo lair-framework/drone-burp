@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	version = "1.0.2"
+	version = "1.0.3"
 	tool    = "burp"
 	usage   = `
 	Parses a burp XML file into a lair project.
@@ -93,7 +93,12 @@ func buildProject(burp *burp.Issues, projectID string, tags []string) (*lair.Pro
 		} else if net.ParseIP(host) != nil {
 			lhost.IPv4 = host
 		} else {
-			continue
+			ips, err := net.LookupIP(host)
+			if err != nil {
+				log.Println("Could not lookup ", host)
+				continue
+			}
+			lhost.IPv4 = ips[0].String()
 		}
 		lhost.Hostnames = append(lhost.Hostnames, host)
 		hostStr := fmt.Sprintf("%s:%d:%s", lhost.IPv4, portNum, "tcp")
